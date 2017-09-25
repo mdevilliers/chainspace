@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.ucl.cs.sec.chainspace</groupId>
     <artifactId>chainspace</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${version}</version>
     <build>
         <plugins>
             <plugin>

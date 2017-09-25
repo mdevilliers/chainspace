@@ -1,17 +1,26 @@
+CHAINSPACE_VERSION := 1.0.0
+CHAINSPACE_JAR :=chainspace-$(CHAINSPACE_VERSION)-jar-with-dependencies.jar
 
+BUILD_FOLDER := $(PWD)/build
 
-build: docker-init ## build chainspace in the docker build environment
+clean: # resets the build folder
+	rm -rf $(BUILD_FOLDER)
+	mkdir -p $(BUILD_FOLDER)
+
+.PHONY: clean
+
+build: clean docker-init ## build chainspace in the docker build environment
 	# creating dummy container which will hold a volume with the src
 	docker create -v /app --name chainspace-build-vol chainspace/java-build /bash/true
 	# copying the src files into this volume
 	docker cp $(PWD) chainspace-build-vol:/app
 	# starting application container using this volume
 	# The command line is a bit hairy but contains the following steps:
-	# - install the dependencies via mvn
-	# - build with mvn
-	docker run --volumes-from chainspace-build-vol chainspace/java-build /bin/bash -c "cd /app/chainspace/chainspacecore; mvn package "
+	# - cd to the correct folder
+	# - build the uber-jar with mvn
+	docker run --volumes-from chainspace-build-vol chainspace/java-build /bin/bash -c "cd /app/chainspace/chainspacecore; mvn -Dversion=$(CHAINSPACE_VERSION) package assembly:single"
 	# once the build has finished we can copy artifacts directly from it
-	docker cp chainspace-build-vol:/app/chainspace/chainspacecore/target $(PWD)/target
+	docker cp chainspace-build-vol:/app/chainspace/chainspacecore/target/$(CHAINSPACE_JAR) $(BUILD_FOLDER)
 	# clean up
 	docker rm /chainspace-build-vol
 
