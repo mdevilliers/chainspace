@@ -1,0 +1,8 @@
+version: '2'
+services:
+  ## node-1
+  node-one:
+    image: chainspace/node
+  ## node-2
+  node-two:
+    image: chainspace/node

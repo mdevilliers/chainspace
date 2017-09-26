@@ -1,0 +1,4 @@
+FROM openjdk:8-jre
+
+COPY chainspacecore/ChainSpaceConfig /chainspace/ChainSpaceConfig 
+COPY build/ /chainspace/

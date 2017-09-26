@@ -9,12 +9,12 @@ clean: # resets the build folder
 
 .PHONY: clean
 
-build: clean docker-init ## build chainspace in the docker build environment
+build: clean docker-build-init ## build chainspace in the docker build environment
 	# creating dummy container which will hold a volume with the src
 	docker create -v /app --name chainspace-build-vol chainspace/java-build /bash/true
-	# copying the src files into this volume
+	# copy the src files into this volume
 	docker cp $(PWD) chainspace-build-vol:/app
-	# starting application container using this volume
+	# start build container using this volume
 	# The command line is a bit hairy but contains the following steps:
 	# - cd to the correct folder
 	# - build the uber-jar with mvn
@@ -26,10 +26,15 @@ build: clean docker-init ## build chainspace in the docker build environment
 
 .PHONY: build
 
-docker-init: ## build docker container for building chainspace
+docker-build: ## build docker container for running chainspace
+	docker build -t chainspace/node -f docker/Dockerfile.chainspace-node .
+
+.PHONY: docker-build
+
+docker-build-init: ## build docker container for building chainspace
 	docker build -t chainspace/java-build -f docker/Dockerfile.build .
 
-.PHONY: docker-init 
+.PHONY: docker-build-init
 
 # 'help' parses the Makefile and displays the help text
 help:
